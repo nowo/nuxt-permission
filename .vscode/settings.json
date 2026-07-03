@@ -1,3 +1,18 @@
 {
-  "eslint.useFlatConfig": true
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+        "source.fixAll.eslint": "explicit",
+        "source.organizeImports": "never"
+    },
+    "editor.tabSize": 4,
+    "files.insertFinalNewline": true,
+    "cSpell.words": [
+        "nuxi",
+        "nuxt",
+        "nuxtjs",
+        "unocss",
+        "Vite",
+        "vnode",
+        "vueuse"
+    ]
 }

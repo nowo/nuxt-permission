@@ -1,6 +1,6 @@
-<template>
-  <div>basic</div>
-</template>
-
 <script setup>
 </script>
+
+<template>
+    <div>basic</div>
+</template>

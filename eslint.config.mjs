@@ -1,20 +1,14 @@
 // @ts-check
-import { createConfigForNuxt } from '@nuxt/eslint-config/flat'
+import defineConfig from '@wzo/eslint-config'
 
-// Run `npx @eslint/config-inspector` to inspect the resolved config interactively
-export default createConfigForNuxt({
-  features: {
-    // Rules for module authors
-    tooling: true,
-    // Rules for formatting
-    stylistic: true,
-  },
-  dirs: {
-    src: [
-      './playground',
-    ],
-  },
+// 不叠加 @nuxt/eslint-config 的 createConfigForNuxt——两者都打包 import/unicorn/jsdoc 插件会冲突。
+export default defineConfig({
+    vue: true,
+    ignores: ['log'],
+}, {
+    // Nuxt 文件路由页允许单词组件名（index / secret / dashboard 等）
+    files: ['playground/**', 'test/**'],
+    rules: {
+        'vue/multi-word-component-names': 'off',
+    },
 })
-  .append(
-    // your custom flat config here...
-  )
