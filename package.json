@@ -1,10 +1,20 @@
 {
-    "name": "nuxt-dynamic-routes",
+    "name": "nuxt-permission",
     "type": "module",
     "version": "1.0.0",
-    "description": "My new Nuxt module",
+    "packageManager": "pnpm@10.34.4",
+    "description": "Backend menu / permission driven dynamic routes and permissions for Nuxt: non-whitelisted routes register after login, with built-in permission state and hasPermission.",
     "license": "MIT",
-    "repository": "your-org/my-module",
+    "repository": "nowo/nuxt-permission",
+    "keywords": [
+        "nuxt",
+        "nuxt-module",
+        "permission",
+        "rbac",
+        "dynamic-routes",
+        "menu",
+        "vue-router"
+    ],
     "exports": {
         ".": {
             "types": "./dist/types.d.mts",
@@ -22,9 +32,6 @@
     "files": [
         "dist"
     ],
-    "workspaces": [
-        "playground"
-    ],
     "scripts": {
         "prepack": "nuxt-module-build build",
         "dev": "npm run dev:prepare && nuxt dev playground",
@@ -41,11 +48,11 @@
     },
     "devDependencies": {
         "@nuxt/devtools": "^3.2.4",
-        "@nuxt/eslint-config": "^1.15.2",
         "@nuxt/module-builder": "^1.0.2",
         "@nuxt/schema": "^4.4.8",
         "@nuxt/test-utils": "^4.0.3",
         "@types/node": "latest",
+        "@wzo/eslint-config": "^0.0.3",
         "changelogen": "^0.6.2",
         "eslint": "^10.4.1",
         "nuxt": "^4.4.8",
