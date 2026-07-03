@@ -2,5 +2,5 @@
 </script>
 
 <template>
-    <NuxtPage />
+    <div>admin-secret</div>
 </template>

@@ -1,7 +1,11 @@
-import MyModule from '../../../src/module'
+import PermissionModule from '../../../src/module'
 
 export default defineNuxtConfig({
     modules: [
-        MyModule,
+        PermissionModule,
     ],
+    permission: {
+        // Only the index page stays static; the rest (/admin/secret) is dynamic
+        static: ['/'],
+    },
 })
