@@ -1,5 +1,5 @@
 {
-    "name": "my-module-playground",
+    "name": "nuxt-permission-playground",
     "type": "module",
     "private": true,
     "scripts": {
@@ -8,7 +8,7 @@
         "generate": "nuxt generate"
     },
     "dependencies": {
-        "my-module": "latest",
-        "nuxt": "^4.4.8"
+        "nuxt": "^4.4.8",
+        "nuxt-permission": "workspace:*"
     }
 }

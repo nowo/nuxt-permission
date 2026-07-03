@@ -1,6 +1,11 @@
 export default defineNuxtConfig({
-    modules: ['my-module'],
+    modules: ['nuxt-permission'],
+    ssr: false,
     devtools: { enabled: true },
     compatibilityDate: 'latest',
-    myModule: {},
+    permission: {
+        enabled: true,
+        // Whitelist: only / and /login stay static; the rest (/dashboard, /menu) are dynamic
+        static: ['/', '/login'],
+    },
 })
