@@ -12,6 +12,9 @@ import { hasPermission } from './hasPermission'
 export function usePermissionState() {
     const permissions = useState<string[]>('nuxt-permission:permissions', () => [])
     const menus = useState<PermissionMenu[]>('nuxt-permission:menus', () => [])
+    // Reactive signal bumped after each registration pass. `router.getRoutes()` is not reactive,
+    // so depend on this in a computed to re-read it: `computed(() => (void routesVersion.value, router.getRoutes()))`.
+    const routesVersion = useState('nuxt-permission:routes-version', () => 0)
 
     const setPermissionList = (list: string[]) => {
         permissions.value = list ?? []
@@ -27,6 +30,7 @@ export function usePermissionState() {
         for (const route of treeToRoutes(tree ?? [], routeManifest)) {
             router.addRoute(route)
         }
+        routesVersion.value++ // notify computed that read router.getRoutes()
         // If the deep-linked first page is registered after the initial resolve, force a re-resolve
         const route = useRoute()
         if (!route.matched.length && route.fullPath !== '/') {
@@ -40,5 +44,5 @@ export function usePermissionState() {
         menus.value = []
     }
 
-    return { permissions, menus, hasPermission, setPermissionList, setMenusList, load, clear }
+    return { permissions, menus, routesVersion, hasPermission, setPermissionList, setMenusList, load, clear }
 }
