@@ -13,6 +13,7 @@ export default defineEventHandler((event) => {
                 id: 2,
                 name: 'menu',
                 path: '/menu',
+                alias: '/m',
                 type: 1,
                 permission: '',
                 meta: { sort: 1 },

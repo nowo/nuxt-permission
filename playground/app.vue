@@ -1,12 +1,26 @@
 <script setup lang="ts">
-import type { PermissionMenu } from 'nuxt-permission'
+const router = useRouter()
+const route = useRoute()
 
-const { menus, clear } = usePermissionState()
+const { menus, clear, routesVersion } = usePermissionState()
 const { token, setToken } = useToken()
 const isLoggedIn = computed(() => !!token.value)
 
+// getRoutes() is NOT reactive — depend on routesVersion (bumped after each registration) to re-read it.
+const routeList = computed(() => {
+    void routesVersion.value
+    return router.getRoutes().map(r => r.path)
+})
+watch(routeList, v => console.log('routeList (via routesVersion) :>> ', v), { immediate: true })
+
+// Alternative: log route-table changes in afterEach (fires after each navigation)
+router.afterEach((to) => {
+    console.log('route :>> ', route)
+    console.log(`routes after → ${to.fullPath} :>> `, router.getRoutes().map(r => r.path))
+})
+
 // Nav derived from reactive menus (menus is set after routes are registered, so links always resolve)
-const navMenus = computed(() => menus.value.filter(m => m.path) as Array<PermissionMenu & { path: string }>)
+const navMenus = computed(() => menus.value.filter(m => m.path))
 
 function onLogout() {
     setToken('')
