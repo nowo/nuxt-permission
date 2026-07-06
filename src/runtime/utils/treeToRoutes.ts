@@ -17,7 +17,18 @@ export function treeToRoutes(
     manifest: Record<string, RouteManifestEntry>,
 ): RouteRecordRaw[] {
     const routes: RouteRecordRaw[] = []
+    const seen = new Set<string>()
     const group = permissionOptions.group ?? 'redirect'
+
+    // Register each canonical path once. A page reachable from several menu entries (easy to do
+    // by accident when configuring the backend menu) would otherwise be addRoute'd twice and
+    // trigger a vue-router "duplicate record" warning. The menu tree keeps every entry, so all
+    // sidebar links still show — only the route table is deduped (first entry wins).
+    const pushRoute = (route: RouteRecordRaw) => {
+        if (seen.has(route.path)) return
+        seen.add(route.path)
+        routes.push(route)
+    }
 
     const leaf = (node: PermissionMenu, routePath: string, entry: RouteManifestEntry): RouteRecordRaw => {
         const { children: _c, meta, ...routeFields } = node
@@ -41,13 +52,13 @@ export function treeToRoutes(
                 if (routePath) {
                     const entry = manifest[routePath]
                     if (group === 'navigate' && entry) {
-                        routes.push(leaf(node, routePath, entry)) // render its own page
+                        pushRoute(leaf(node, routePath, entry)) // render its own page
                     } else {
                         // Redirect to the first non-external child, using its canonical pathname (query stripped).
                         // No such child (e.g. all children external) → skip: a record without component/redirect is invalid.
                         const target = children.find(c => c.path && !isExternalPath(c.path))?.path
                         if (target) {
-                            routes.push({ ...routeFields, path: routePath, redirect: canonicalPath(toPathname(target)), meta } as RouteRecordRaw)
+                            pushRoute({ ...routeFields, path: routePath, redirect: canonicalPath(toPathname(target)), meta } as RouteRecordRaw)
                         }
                     }
                 }
@@ -55,7 +66,7 @@ export function treeToRoutes(
             } else if (routePath) {
                 const entry = manifest[routePath]
                 if (entry) {
-                    routes.push(leaf(node, routePath, entry))
+                    pushRoute(leaf(node, routePath, entry))
                 } else {
                     console.warn(`[nuxt-permission] no page component for menu path: ${node.path}`)
                 }
