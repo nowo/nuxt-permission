@@ -37,6 +37,7 @@ export default defineNuxtConfig({
         static: ['/', '/login'], // Whitelist of public static routes; the rest become dynamic
         // source: 'permission',  // Data source file (relative to srcDir, extension omitted), default permission.ts
         // routeFields: [],        // Extra fields to keep at the route level
+        // group: 'redirect',      // Group node with its own page: 'redirect' (default) | 'navigate'
     },
 })
 ```
@@ -47,6 +48,7 @@ export default defineNuxtConfig({
 | `static` | `string \| string[]` | `['/', '/login']` | Whitelist; **everything else becomes dynamic**. Glob: `/home/**` exposes the whole subtree |
 | `source` | `string` | `'permission'` | Data source file (relative to srcDir, extension omitted) |
 | `routeFields` | `string[]` | `[]` | Extra fields kept at the route level in addition to the built-in RouteRecordRaw set |
+| `group` | `'redirect' \| 'navigate'` | `'redirect'` | A group node (a menu with menu children) that also has its own page: `redirect` to its first child, or `navigate` to render its own page. A group without its own page always redirects |
 
 ## Usage
 
@@ -100,6 +102,13 @@ async function onLogin() {
 ### 4. `normalizeMenus` menu transform
 
 Turns the raw backend menu tree into route shape: `type: 'button'` is folded into the parent's `meta.permission` (key = the `permission` field, value = the whole button node); a node with menu children is treated as a group and `redirect`s to its first child; `cb` returning a falsy value drops the node and its subtree; a backend `meta` object is flattened into meta.
+
+**Menu path notes**
+
+- **External links** (`http(s)://`, protocol-relative `//`) are kept in the menu tree but not registered as routes — render them as `<a>` in your sidebar (they carry `meta._external`).
+- **Param pages**: a backend path may use either bracket or colon syntax — `/detail/[id]` and `/detail/:id` both match `pages/detail/[id].vue`.
+- **Query strings**: a path like `/report?range=7d` registers the pathname `/report` while keeping the full value for the sidebar link.
+- **Deduplication**: the same page reached from several menu entries registers once (first wins); every entry still shows in the menu tree.
 
 ## Type extension (declaration merging)
 

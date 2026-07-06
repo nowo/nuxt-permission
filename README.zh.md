@@ -37,6 +37,7 @@ export default defineNuxtConfig({
         static: ['/', '/login'], // 白名单：保持静态的公开路由，其余全部动态
         // source: 'permission',  // 数据源文件（相对 srcDir，省扩展名），默认 permission.ts
         // routeFields: [],        // 额外保留在 route 层的字段
+        // group: 'redirect',      // 分组节点自带页面时：'redirect'（默认）| 'navigate'
     },
 })
 ```
@@ -47,6 +48,7 @@ export default defineNuxtConfig({
 | `static` | `string \| string[]` | `['/', '/login']` | 白名单，**其余全部转动态**。glob：`/home/**` 整段公开 |
 | `source` | `string` | `'permission'` | 数据源文件（相对 srcDir，省扩展名） |
 | `routeFields` | `string[]` | `[]` | 在内置 RouteRecordRaw 字段外额外保留在 route 层的字段 |
+| `group` | `'redirect' \| 'navigate'` | `'redirect'` | 分组节点（有 menu 子节点）且自带页面时：`redirect` 到第一个子菜单，或 `navigate` 渲染自身页面。无自带页面的分组一律重定向 |
 
 ## 用法
 
@@ -100,6 +102,13 @@ async function onLogin() {
 ### 4. `normalizeMenus` 菜单转换
 
 把后端原始菜单树转成路由形状：`type: 'button'` 折叠进父级 `meta.permission`（key = permission 字段，value = 整个按钮节点）；有 menu 子节点的视为分组，`redirect` 到第一个子菜单；`cb` 返回 falsy 排除该节点及子树；后端 `meta` 摊平进 meta。
+
+**菜单 path 说明**
+
+- **外链**（`http(s)://`、协议相对 `//`）：保留在菜单树但不注册为路由——侧边栏用 `<a>` 渲染（带 `meta._external` 标记）。
+- **参数页**：后端 path 支持中括号或冒号两种写法——`/detail/[id]` 与 `/detail/:id` 都能命中 `pages/detail/[id].vue`。
+- **带 query**：如 `/report?range=7d`，注册 pathname `/report`，完整值留给侧边栏链接。
+- **去重**：同一页被多个菜单项指向时只注册一次（首个生效）；菜单树仍保留每个入口。
 
 ## 类型扩展（declaration merging）
 
