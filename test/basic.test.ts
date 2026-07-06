@@ -46,4 +46,16 @@ describe('nuxt-permission', async () => {
         const res = await fetch('/links', { headers: { cookie: 'auth=1' } })
         expect(res.status).toBe(404)
     })
+
+    it('a page shared by two menu entries still resolves (deduped, no duplicate route)', async () => {
+        const html = await $fetch('/admin/secret', { headers: { cookie: 'auth=1' } })
+        expect(html).toContain('admin-secret')
+    })
+
+    it('two entries to the same pathname with different queries both hit the one route', async () => {
+        const first = await $fetch('/report?range=7d', { headers: { cookie: 'auth=1' } })
+        const second = await $fetch('/report?range=all', { headers: { cookie: 'auth=1' } })
+        expect(first).toContain('report-page')
+        expect(second).toContain('report-page')
+    })
 })
