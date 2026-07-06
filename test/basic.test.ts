@@ -58,4 +58,14 @@ describe('nuxt-permission', async () => {
         expect(first).toContain('report-page')
         expect(second).toContain('report-page')
     })
+
+    it('a whitelisted child survives its non-whitelisted parent being stripped (renders unauthenticated)', async () => {
+        const html = await $fetch('/protected/open')
+        expect(html).toContain('protected-open')
+    })
+
+    it('the non-whitelisted parent of a whitelisted child is still unreachable (404)', async () => {
+        const res = await fetch('/protected')
+        expect(res.status).toBe(404)
+    })
 })

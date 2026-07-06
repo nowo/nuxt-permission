@@ -140,7 +140,14 @@ declare module 'vue-router' {
                         const key = canonicalPath(abs)
                         if (!whitelist.some(re => re.test(key))) {
                             dynamicPages.push({ name: page.name, path: key, file: page.file, meta: page.meta })
-                            list.splice(i, 1)
+                            // The recursive walk above already stripped non-whitelisted descendants, so
+                            // page.children now holds only whitelisted survivors. Promote them to flat
+                            // routes (rewrite to absolute path) instead of dropping them with the parent.
+                            const survivors = page.children ?? []
+                            for (const child of survivors) {
+                                if (child.path) child.path = joinRoutePath(abs, child.path)
+                            }
+                            list.splice(i, 1, ...survivors)
                         }
                     }
                 }
