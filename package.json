@@ -5,7 +5,12 @@
     "packageManager": "pnpm@10.34.4",
     "description": "Backend menu / permission driven dynamic routes and permissions for Nuxt: non-whitelisted routes register after login, with built-in permission state and hasPermission.",
     "license": "MIT",
-    "repository": "nowo/nuxt-permission",
+    "homepage": "https://github.com/nowo/nuxt-permission#readme",
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/nowo/nuxt-permission.git"
+    },
+    "bugs": "https://github.com/nowo/nuxt-permission/issues",
     "keywords": [
         "nuxt",
         "nuxt-module",
