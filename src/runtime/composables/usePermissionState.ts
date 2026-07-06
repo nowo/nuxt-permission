@@ -7,6 +7,9 @@ import { hasPermission } from './hasPermission'
 
 // Remove-handles for routes added by load(). Module-scoped because load()/clear() run on the
 // client (post-login / logout); the SSR first-paint path registers via router.options, not here.
+// WARNING: because this is module-scoped, it is shared across requests on the server — do not call
+// load()/clear() during SSR, or one request's routes would leak into another. Server-side first-paint
+// registration must go through router.options only.
 let routeRemovers: (() => void)[] = []
 
 const removeDynamicRoutes = () => {
@@ -32,14 +35,23 @@ export function usePermissionState() {
         menus.value = tree ?? []
     }
 
-    /** Re-run the source, write state and register routes (call after login / manual refresh) */
+    /**
+     * Re-run the source, write state and register routes (call after login / manual refresh).
+     * Client-only — see the module-scoped `routeRemovers` note above; do not call during SSR.
+     */
     const load = async () => {
         const tree = await source({ setPermissionList, setMenusList })
         const router = useRouter()
         // Drop routes from a previous load() first, so a re-login does not register duplicates
         removeDynamicRoutes()
+        // Skip paths already in the table (a whitelisted static page, or a dynamic route the
+        // SSR first paint already registered via router.options — those are not in routeRemovers,
+        // so without this check a later load() would addRoute them again as duplicate records)
+        const existing = new Set(router.getRoutes().map(r => r.path))
         for (const route of treeToRoutes(tree ?? [], routeManifest)) {
+            if (existing.has(route.path)) continue
             routeRemovers.push(router.addRoute(route))
+            existing.add(route.path)
         }
         routesVersion.value++ // notify computed that read router.getRoutes()
         // If the deep-linked first page is registered after the initial resolve, force a re-resolve
