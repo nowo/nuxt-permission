@@ -9,7 +9,7 @@ import { useState } from '#imports'
  * @remarks An empty array always returns false — an empty requirement grants no access.
  */
 export function hasPermission(perm: PermissionKey | PermissionKey[], isAll = false): boolean {
-    const permissions = useState<string[]>('nuxt-permission:permissions', () => [])
+    const permissions = useState<PermissionKey[]>('nuxt-permission:permissions', () => [])
     const list = Array.isArray(perm) ? perm : [perm]
     // An empty list carries no permission requirement; treat it as "no access"
     // in both modes rather than letting `every` grant access via vacuous truth.

@@ -1,4 +1,4 @@
-import type { PermissionMenu } from '../types'
+import type { PermissionKey, PermissionMenu } from '../types'
 import { useRoute, useRouter, useState } from '#imports'
 import { routeManifest } from '#nuxt-permission/manifest'
 import source from '#nuxt-permission/source'
@@ -22,14 +22,16 @@ const removeDynamicRoutes = () => {
  * live in memory (fetched from the server by the source on every load).
  */
 export function usePermissionState() {
-    const permissions = useState<string[]>('nuxt-permission:permissions', () => [])
+    const permissions = useState<PermissionKey[]>('nuxt-permission:permissions', () => [])
     const menus = useState<PermissionMenu[]>('nuxt-permission:menus', () => [])
     // Reactive signal bumped after each registration pass. `router.getRoutes()` is not reactive,
     // so depend on this in a computed to re-read it: `computed(() => (void routesVersion.value, router.getRoutes()))`.
     const routesVersion = useState('nuxt-permission:routes-version', () => 0)
 
     const setPermissionList = (list: string[]) => {
-        permissions.value = list ?? []
+        // Write side stays string[] (backend data); the read ref is PermissionKey[] for completion.
+        // Assert here so extending PermissionMap doesn't force callers to cast their fetched list.
+        permissions.value = (list ?? []) as PermissionKey[]
     }
     const setMenusList = (tree: PermissionMenu[]) => {
         menus.value = tree ?? []
