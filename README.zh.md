@@ -67,7 +67,8 @@ export default definePermissionSource(async ({ setPermissionList, setMenusList }
     })
 
     setPermissionList(permissions)
-    const tree = normalizeMenus(menus, v => ({ ...v, type: `${v.type}` === '1' ? 'menu' : 'button' }))
+    // 用保留标记 `_btn` 标注按钮，使其折叠进父级 meta._permission
+    const tree = normalizeMenus(menus, v => ({ ...v, _btn: `${v.type}` === '2' }))
     setMenusList(tree)
     return tree
 })
@@ -101,7 +102,11 @@ async function onLogin() {
 
 ### 4. `normalizeMenus` 菜单转换
 
-把后端原始菜单树转成路由形状：`type: 'button'` 折叠进父级 `meta.permission`（key = permission 字段，value = 整个按钮节点）；有 menu 子节点的视为分组，`redirect` 到第一个子菜单；`cb` 返回 falsy 排除该节点及子树；后端 `meta` 摊平进 meta。
+把后端原始菜单树转成路由形状：在 `cb` 里标注 `_btn: true` 的节点折叠进父级 `meta._permission`（key = permission 字段，value = 整个按钮节点，`_btn` 标记会被剥离）；有 menu 子节点的视为分组，`redirect` 到第一个子菜单；`cb` 返回 falsy 排除该节点及子树；后端 `meta` 摊平进 meta。
+
+> **保留字段**（统一 `_` 前缀，与后端数据隔离）：输入标记 `_btn`（你在 `cb` 里设置以标注按钮）；输出 `meta._permission`（折叠的按钮权限）、`meta._external`（外链标记）。
+>
+> **从 1.x 迁移**（破坏性）：按钮改为在 `cb` 里用 `_btn` 标注，不再从 `type === 'button'` 推断；折叠权限从 `meta.permission` 移到 `meta._permission`。请把 `cb` 改为设置 `_btn`，并把 `route.meta.permission` 的读取改成 `route.meta._permission`。
 
 **菜单 path 说明**
 
@@ -127,7 +132,7 @@ declare module 'nuxt-permission' {
     interface PermissionMap {
         keys: 'menu-add' | 'menu-edit' | 'menu-view' // hasPermission 的 key 有补全
     }
-    interface PermissionButton { // meta.permission 里 button 节点的字段
+    interface PermissionButton { // meta._permission 里 button 节点的字段
         id: number
         name: string
         permission: string
@@ -135,7 +140,7 @@ declare module 'nuxt-permission' {
 }
 ```
 
-> 扩展 `PermissionMap` 后，`hasPermission('...')` 与 `route.meta.permission['...']` 的 key 都会**自动收窄**为你声明的联合。无需（也无法）重声明 `RouteMeta.permission` 去覆盖——interface 声明合并不允许用不同类型重定义同名属性。
+> 扩展 `PermissionMap` 后，`hasPermission('...')` 与 `route.meta._permission['...']` 的 key 都会**自动收窄**为你声明的联合。无需（也无法）重声明 `RouteMeta._permission` 去覆盖——interface 声明合并不允许用不同类型重定义同名属性。
 
 ## i18n
 
