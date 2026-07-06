@@ -1,6 +1,32 @@
 # Changelog
 
 
+## v1.1.3
+
+[compare changes](https://github.com/nowo/nuxt-permission/compare/v1.1.2...v1.1.3)
+
+### 🩹 Fixes
+
+- **module:** Promote whitelisted children when stripping their parent ([5f8b0a5](https://github.com/nowo/nuxt-permission/commit/5f8b0a5))
+- **composable:** Skip already-registered routes in load to avoid duplicates ([16c913e](https://github.com/nowo/nuxt-permission/commit/16c913e))
+- **composable:** Ignore non-object backend meta in normalizeMenus ([c43478b](https://github.com/nowo/nuxt-permission/commit/c43478b))
+
+### 💅 Refactors
+
+- **composable:** Type permissions ref as PermissionKey[] ([ecaae0d](https://github.com/nowo/nuxt-permission/commit/ecaae0d))
+
+### 📖 Documentation
+
+- **readme:** Document group option and menu path behaviors ([d793c0b](https://github.com/nowo/nuxt-permission/commit/d793c0b))
+
+### 🏡 Chore
+
+- **package:** Use object form for repository, add homepage and bugs ([ac78e91](https://github.com/nowo/nuxt-permission/commit/ac78e91))
+
+### ❤️ Contributors
+
+- Nowo ([@nowo](https://github.com/nowo))
+
 ## v1.1.2
 
 [compare changes](https://github.com/nowo/nuxt-permission/compare/v1.1.1...v1.1.2)
