@@ -21,4 +21,9 @@ describe('nuxt-permission', async () => {
         const html = await $fetch('/admin/secret', { headers: { cookie: 'auth=1' } })
         expect(html).toContain('admin-secret')
     })
+
+    it('a group node redirects to its first child by default (group: redirect)', async () => {
+        const html = await $fetch('/section', { headers: { cookie: 'auth=1' } })
+        expect(html).toContain('section-a') // redirected to /section/a, not the group's own page
+    })
 })
