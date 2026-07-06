@@ -12,7 +12,7 @@ const route = useRoute()
         <div style="display: flex; gap: 8px">
             <button v-if="hasPermission('menu-add')">
                 <!-- typed correctly -->
-                {{ route.meta?.permission?.['menu-add']?.name }}
+                {{ route.meta?._permission?.['menu-add']?.name }}
             </button>
             <button v-if="hasPermission('menu-edit')">
                 Edit
