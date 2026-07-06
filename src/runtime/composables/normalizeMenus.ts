@@ -56,8 +56,12 @@ export function normalizeMenus<T = any>(
             if (key === 'children') {
                 continue
             }
-            if (key === 'meta' && value && typeof value === 'object' && !Array.isArray(value)) {
-                Object.assign(node.meta, value) // Flatten backend meta, avoid nested meta.meta
+            if (key === 'meta') {
+                // Flatten a backend meta object; ignore a non-object meta (null/primitive)
+                // instead of letting it fall through and become meta.meta
+                if (value && typeof value === 'object' && !Array.isArray(value)) {
+                    Object.assign(node.meta, value)
+                }
             } else if (routeFields.has(key)) {
                 (node as any)[key] = value
             } else {
