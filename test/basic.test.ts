@@ -26,4 +26,19 @@ describe('nuxt-permission', async () => {
         const html = await $fetch('/section', { headers: { cookie: 'auth=1' } })
         expect(html).toContain('section-a') // redirected to /section/a, not the group's own page
     })
+
+    it('registers a param page whose menu path uses bracket syntax ([id] → :id)', async () => {
+        const html = await $fetch('/detail/1', { headers: { cookie: 'auth=1' } })
+        expect(html).toContain('detail-1')
+    })
+
+    it('registers a nested param page flat (renders even without <NuxtPage> in the parent)', async () => {
+        const html = await $fetch('/nest/2', { headers: { cookie: 'auth=1' } })
+        expect(html).toContain('nest-detail')
+    })
+
+    it('registers the pathname when the menu path carries a query', async () => {
+        const html = await $fetch('/report?range=7d', { headers: { cookie: 'auth=1' } })
+        expect(html).toContain('report-page')
+    })
 })

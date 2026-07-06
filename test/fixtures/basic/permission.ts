@@ -10,6 +10,14 @@ export default definePermissionSource(({ setPermissionList, setMenusList }) => {
         { id: 2, name: 'section', path: '/section', type: 'menu', children: [
             { id: 3, name: 'section-a', path: '/section/a', type: 'menu', children: [] },
         ] },
+        // param page, backend uses bracket syntax `[id]` → matches pages/detail/[id].vue
+        { id: 4, name: 'detail', path: '/detail/[id]', type: 'menu', children: [] },
+        // nested param page (pages/nest.vue + pages/nest/[id].vue), backend uses `:id` syntax
+        { id: 5, name: 'nest', path: '/nest/:id', type: 'menu', children: [] },
+        // external link — not registered as a route
+        { id: 6, name: 'gh', path: 'https://github.com/', type: 'menu', children: [] },
+        // path with query — registers the pathname /report, keeps the query for the sidebar link
+        { id: 7, name: 'report', path: '/report?range=7d', type: 'menu', children: [] },
     ])
     setPermissionList(['secret-view'])
     setMenusList(tree)
