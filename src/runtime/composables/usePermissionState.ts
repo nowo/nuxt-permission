@@ -5,6 +5,15 @@ import source from '#nuxt-permission/source'
 import { treeToRoutes } from '../utils/treeToRoutes'
 import { hasPermission } from './hasPermission'
 
+// Remove-handles for routes added by load(). Module-scoped because load()/clear() run on the
+// client (post-login / logout); the SSR first-paint path registers via router.options, not here.
+let routeRemovers: (() => void)[] = []
+
+const removeDynamicRoutes = () => {
+    for (const remove of routeRemovers) remove()
+    routeRemovers = []
+}
+
 /**
  * Permission / menu state. Token storage is up to the user; permissions and menus
  * live in memory (fetched from the server by the source on every load).
@@ -27,8 +36,10 @@ export function usePermissionState() {
     const load = async () => {
         const tree = await source({ setPermissionList, setMenusList })
         const router = useRouter()
+        // Drop routes from a previous load() first, so a re-login does not register duplicates
+        removeDynamicRoutes()
         for (const route of treeToRoutes(tree ?? [], routeManifest)) {
-            router.addRoute(route)
+            routeRemovers.push(router.addRoute(route))
         }
         routesVersion.value++ // notify computed that read router.getRoutes()
         // If the deep-linked first page is registered after the initial resolve, force a re-resolve
@@ -38,10 +49,12 @@ export function usePermissionState() {
         }
     }
 
-    /** Clear state (for logout) */
+    /** Clear state and unregister the dynamic routes added by load() (for logout) */
     const clear = () => {
         permissions.value = []
         menus.value = []
+        removeDynamicRoutes()
+        routesVersion.value++
     }
 
     return { permissions, menus, routesVersion, hasPermission, setPermissionList, setMenusList, load, clear }
