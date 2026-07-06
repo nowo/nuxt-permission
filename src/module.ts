@@ -8,6 +8,7 @@ import {
     defineNuxtModule,
     extendPages,
 } from '@nuxt/kit'
+import { canonicalPath, joinRoutePath } from './runtime/utils/path'
 
 export type {
     PermissionButton,
@@ -123,18 +124,24 @@ declare module 'vue-router' {
 
         const whitelist = ([] as string[]).concat(options.static).map(globToRegExp)
 
-        // Build time: strip non-whitelisted pages from the static route table, collecting their name/path/file/meta
+        // Build time: strip non-whitelisted pages from the static route table, collecting them.
+        // Child pages get an absolute, canonical key (e.g. `menu/[id]` under `menu.vue` → `/menu/:id`)
+        // so backend `/menu/:id` and `/menu/[id]` both match, and nested pages register flat.
         extendPages((pages) => {
-            const walk = (list: NuxtPage[]) => {
+            const walk = (list: NuxtPage[], parent = '') => {
                 for (let i = list.length - 1; i >= 0; i--) {
                     const page = list[i]
                     if (!page) continue
+                    const abs = page.path ? joinRoutePath(parent, page.path) : undefined
                     if (page.children?.length) {
-                        walk(page.children)
+                        walk(page.children, abs ?? parent)
                     }
-                    if (page.path && !whitelist.some(re => re.test(page.path))) {
-                        dynamicPages.push({ name: page.name, path: page.path, file: page.file, meta: page.meta })
-                        list.splice(i, 1)
+                    if (abs) {
+                        const key = canonicalPath(abs)
+                        if (!whitelist.some(re => re.test(key))) {
+                            dynamicPages.push({ name: page.name, path: key, file: page.file, meta: page.meta })
+                            list.splice(i, 1)
+                        }
                     }
                 }
             }

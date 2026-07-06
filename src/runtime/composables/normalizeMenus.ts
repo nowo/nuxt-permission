@@ -1,5 +1,6 @@
 import type { PermissionMenu } from '../types'
 import { permissionOptions } from '#nuxt-permission/options'
+import { isExternalPath } from '../utils/path'
 
 // Valid vue-router RouteRecordRaw "route-level" fields; everything else goes to meta
 const BASE_ROUTE_FIELDS = ['path', 'name', 'redirect', 'alias', 'children', 'meta', 'props', 'beforeEnter', 'sensitive', 'strict']
@@ -66,6 +67,10 @@ export function normalizeMenus<T = any>(
 
         if (Object.keys(permission).length) {
             node.meta.permission = permission
+        }
+        // Flag external links so the sidebar can render them as <a> (they are not registered as routes)
+        if (isExternalPath(node.path)) {
+            node.meta._external = true
         }
         node.children = childMenus.map(build)
         // The redirect vs navigate decision for group nodes is made at registration (treeToRoutes),
