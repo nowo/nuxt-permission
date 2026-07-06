@@ -1,12 +1,11 @@
 import type { PermissionMenu } from '../types'
-import { useRuntimeConfig } from '#imports'
+import { permissionOptions } from '#nuxt-permission/options'
 
 // Valid vue-router RouteRecordRaw "route-level" fields; everything else goes to meta
 const BASE_ROUTE_FIELDS = ['path', 'name', 'redirect', 'alias', 'children', 'meta', 'props', 'beforeEnter', 'sensitive', 'strict']
 
 function getRouteFields() {
-    const extra = useRuntimeConfig().public.nuxtPermission?.routeFields ?? []
-    return new Set([...BASE_ROUTE_FIELDS, ...extra])
+    return new Set([...BASE_ROUTE_FIELDS, ...(permissionOptions.routeFields ?? [])])
 }
 
 const isButton = (item: any) => `${item?.type}` === 'button'
@@ -69,10 +68,8 @@ export function normalizeMenus<T = any>(
             node.meta.permission = permission
         }
         node.children = childMenus.map(build)
-        if (node.children.length) {
-            // Group redirects to its first child
-            node.redirect = node.children[0]!.path
-        }
+        // The redirect vs navigate decision for group nodes is made at registration (treeToRoutes),
+        // where the manifest is available to know whether the group has its own page.
         return node
     }
 

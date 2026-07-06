@@ -42,6 +42,13 @@ export interface ModuleOptions {
      * @default []
      */
     routeFields: string[]
+    /**
+     * How a group node (a menu that has menu children) which ALSO has its own page behaves:
+     * `'redirect'` (default) → redirect to its first child; `'navigate'` → render its own page.
+     * A group without its own page always redirects to its first child.
+     * @default 'redirect'
+     */
+    group: 'redirect' | 'navigate'
 }
 
 export default defineNuxtModule<ModuleOptions>({
@@ -54,13 +61,20 @@ export default defineNuxtModule<ModuleOptions>({
         static: ['/', '/login'],
         source: 'permission',
         routeFields: [],
+        group: 'redirect',
     },
     setup(options, nuxt) {
         const { resolve } = createResolver(import.meta.url)
         const dynamicPages: NuxtPage[] = []
 
-        // Expose routeFields at runtime (used by normalizeMenus)
-        nuxt.options.runtimeConfig.public.nuxtPermission = { routeFields: options.routeFields }
+        // Expose options as a typed virtual module #nuxt-permission/options — a compile-time constant,
+        // readable anywhere without Nuxt context (safe inside treeToRoutes at router-creation time).
+        const optionsTpl = addTemplate({
+            filename: 'nuxt-permission/options.mjs',
+            write: true,
+            getContents: () => `export const permissionOptions = ${JSON.stringify({ routeFields: options.routeFields, group: options.group })}\n`,
+        })
+        nuxt.options.alias['#nuxt-permission/options'] = optionsTpl.dst
 
         // Always register composables: even when enabled=false, consumer calls must not throw
         addImportsDir(resolve('./runtime/composables'))
@@ -86,6 +100,9 @@ import type { PermissionButton, PermissionKey } from 'nuxt-permission'
 
 declare module '#nuxt-permission/manifest' {
     export const routeManifest: Record<string, { name?: string, meta?: Record<string, unknown>, component: NonNullable<RouteRecordRaw['component']> }>
+}
+declare module '#nuxt-permission/options' {
+    export const permissionOptions: { routeFields: string[], group: 'redirect' | 'navigate' }
 }
 declare module 'vue-router' {
     interface RouteMeta {

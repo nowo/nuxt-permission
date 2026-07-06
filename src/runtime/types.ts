@@ -55,9 +55,3 @@ export interface RouteManifestEntry {
     meta?: Record<string, unknown>
     component: NonNullable<RouteRecordRaw['component']>
 }
-
-declare module '@nuxt/schema' {
-    interface PublicRuntimeConfig {
-        nuxtPermission?: { routeFields?: string[] }
-    }
-}
