@@ -43,8 +43,12 @@ export function treeToRoutes(
                     if (group === 'navigate' && entry) {
                         routes.push(leaf(node, routePath, entry)) // render its own page
                     } else {
+                        // Redirect to the first non-external child, using its canonical pathname (query stripped).
+                        // No such child (e.g. all children external) → skip: a record without component/redirect is invalid.
                         const target = children.find(c => c.path && !isExternalPath(c.path))?.path
-                        routes.push({ ...routeFields, path: routePath, redirect: target, meta } as RouteRecordRaw)
+                        if (target) {
+                            routes.push({ ...routeFields, path: routePath, redirect: canonicalPath(toPathname(target)), meta } as RouteRecordRaw)
+                        }
                     }
                 }
                 walk(children)
