@@ -16,6 +16,7 @@ watch(routeList, v => console.log('routeList (via routesVersion) :>> ', v), { im
 // Alternative: log route-table changes in afterEach (fires after each navigation)
 router.afterEach((to) => {
     console.log('route :>> ', route)
+    console.log('router.getRoutes() :>> ', router.getRoutes())
     console.log(`routes after → ${to.fullPath} :>> `, router.getRoutes().map(r => r.path))
 })
 

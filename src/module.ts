@@ -96,7 +96,12 @@ declare module 'vue-router' {
 `,
         })
 
-        // enabled=false: strip no routes and inject no source. All pages stay static.
+        // Source alias — always set so usePermissionState can import it; noop when disabled (or no user file)
+        const userSource = resolve(nuxt.options.srcDir, options.source)
+        const sourceFile = ['.ts', '.mts', '.js', '.mjs'].map(ext => userSource + ext).find(existsSync)
+        nuxt.options.alias['#nuxt-permission/source'] = (options.enabled && sourceFile) ? sourceFile : resolve('./runtime/source.noop')
+
+        // enabled=false: strip no routes and inject no router.options. All pages stay static.
         if (!options.enabled) return
 
         const whitelist = ([] as string[]).concat(options.static).map(globToRegExp)
@@ -118,11 +123,6 @@ declare module 'vue-router' {
             }
             walk(pages)
         })
-
-        // Source alias: use the consumer's `<srcDir>/<source>.ts` if present, otherwise the built-in noop
-        const userSource = resolve(nuxt.options.srcDir, options.source)
-        const sourceFile = ['.ts', '.mts', '.js', '.mjs'].map(ext => userSource + ext).find(existsSync)
-        nuxt.options.alias['#nuxt-permission/source'] = sourceFile ?? resolve('./runtime/source.noop')
 
         // Inject router.options — the SSR-safe first-page registration point
         nuxt.hook('pages:routerOptions', ({ files }) => {
