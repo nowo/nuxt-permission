@@ -3,7 +3,7 @@ export default definePermissionSource(({ setPermissionList, setMenusList }) => {
     const authed = useCookie('auth').value
     if (!authed) return []
 
-    // cb omitted: backend data is already in shape (identity default)
+    // cb sets the reserved `_btn` marker so type:'button' nodes fold into the parent's meta._permission
     const tree = normalizeMenus([
         { id: 1, name: 'secret', path: '/admin/secret', type: 'menu', children: [] },
         // group: /section has its own page (section/index.vue) and a child /section/a
@@ -28,7 +28,12 @@ export default definePermissionSource(({ setPermissionList, setMenusList }) => {
         ] },
         // same page as menu id 1, reached from a second entry — must register once (no duplicate route)
         { id: 11, name: 'secret-alt', path: '/admin/secret', type: 'menu', children: [] },
-    ])
+        // button folding: children marked _btn (via cb) fold into /menu's meta._permission
+        { id: 20, name: 'menu', path: '/menu', type: 'menu', children: [
+            { id: 21, name: 'Add', permission: 'menu-add', type: 'button' },
+            { id: 22, name: 'Edit', permission: 'menu-edit', type: 'button' },
+        ] },
+    ], v => ({ ...v, _btn: `${v.type}` === 'button' }))
     setPermissionList(['secret-view'])
     setMenusList(tree)
     return tree

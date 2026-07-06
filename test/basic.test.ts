@@ -68,4 +68,17 @@ describe('nuxt-permission', async () => {
         const res = await fetch('/protected')
         expect(res.status).toBe(404)
     })
+
+    it('folds _btn-marked children into the parent meta._permission (v1.2 reserved key)', async () => {
+        const html = await $fetch('/menu', { headers: { cookie: 'auth=1' } })
+        expect(html).toContain('perm-keys:menu-add,menu-edit')
+        // the legacy `permission` meta key is no longer written (breaking rename)
+        expect(html).toContain('legacy-permission:absent')
+    })
+
+    it('strips the reserved _btn marker from the stored button node', async () => {
+        const html = await $fetch('/menu', { headers: { cookie: 'auth=1' } })
+        expect(html).toContain('add-fields:id,name,permission,type') // no _btn
+        expect(html).not.toContain('_btn')
+    })
 })
