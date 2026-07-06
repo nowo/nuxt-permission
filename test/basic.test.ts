@@ -41,4 +41,9 @@ describe('nuxt-permission', async () => {
         const html = await $fetch('/report?range=7d', { headers: { cookie: 'auth=1' } })
         expect(html).toContain('report-page')
     })
+
+    it('a group whose children are all external links registers no route (404, no crash)', async () => {
+        const res = await fetch('/links', { headers: { cookie: 'auth=1' } })
+        expect(res.status).toBe(404)
+    })
 })

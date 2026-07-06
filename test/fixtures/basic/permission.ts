@@ -18,6 +18,12 @@ export default definePermissionSource(({ setPermissionList, setMenusList }) => {
         { id: 6, name: 'gh', path: 'https://github.com/', type: 'menu', children: [] },
         // path with query — registers the pathname /report, keeps the query for the sidebar link
         { id: 7, name: 'report', path: '/report?range=7d', type: 'menu', children: [] },
+        // group whose children are ALL external links → nothing to redirect to, so the group
+        // itself registers no route (must not crash addRoute with an empty redirect)
+        { id: 8, name: 'links', path: '/links', type: 'menu', children: [
+            { id: 9, name: 'gh2', path: 'https://github.com/', type: 'menu', children: [] },
+            { id: 10, name: 'nuxt', path: 'https://nuxt.com/', type: 'menu', children: [] },
+        ] },
     ])
     setPermissionList(['secret-view'])
     setMenusList(tree)
