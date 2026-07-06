@@ -15,7 +15,7 @@ export type PermissionKey = keyof PermissionMap extends never
     : PermissionMap[keyof PermissionMap]
 
 /**
- * The value of meta.permission — the folded button node.
+ * The value of meta._permission — the folded button node.
  * The library stores it as an opaque object; users type its fields via declaration merging
  * based on their backend shape:
  * @example

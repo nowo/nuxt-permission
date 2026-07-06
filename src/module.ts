@@ -108,7 +108,7 @@ declare module '#nuxt-permission/options' {
 declare module 'vue-router' {
     interface RouteMeta {
         // Uses PermissionKey: once the user extends PermissionMap the key narrows automatically (no need to redeclare RouteMeta)
-        permission?: Partial<Record<PermissionKey, PermissionButton>>
+        _permission?: Partial<Record<PermissionKey, PermissionButton>>
     }
 }
 `,

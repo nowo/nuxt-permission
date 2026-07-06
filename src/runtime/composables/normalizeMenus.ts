@@ -9,17 +9,21 @@ function getRouteFields() {
     return new Set([...BASE_ROUTE_FIELDS, ...(permissionOptions.routeFields ?? [])])
 }
 
-const isButton = (item: any) => `${item?.type}` === 'button'
+// A node is a button only when explicitly marked `_btn: true` — a library-reserved input marker
+// the caller sets in `cb` (e.g. `v => ({ ...v, _btn: `${v.type}` === '2' })`). The backend's own
+// `type` field is left untouched as plain data.
+const isButton = (item: any) => item?._btn === true
 
 /**
  * Transform the raw backend menu tree into a route-shaped tree:
- * - `type: 'menu'` → node; `type: 'button'` → folded into the parent's `meta.permission`
+ * - a node marked `_btn: true` (in `cb`) → folded into the parent's `meta._permission`; otherwise a menu node
  * - non route-level fields + flattened backend `meta` → into `meta`
  * - a node with menu children is treated as a group and `redirect`s to its first child
  *
  * @param list The raw backend menu array.
- * @param cb Optional per-node normalizer/filter. Return the (possibly reshaped) node, or a falsy
- *   value to drop that node and its whole subtree. Omit it when the backend data is already in shape.
+ * @param cb Optional per-node normalizer/filter. Set `_btn: true` to mark a button. Return the
+ *   (possibly reshaped) node, or a falsy value to drop that node and its whole subtree. Omit it
+ *   when the backend data is already in shape and there are no button permissions to fold.
  */
 export function normalizeMenus<T = any>(
     list: T[],
@@ -30,7 +34,7 @@ export function normalizeMenus<T = any>(
     // Apply cb + split one level of raw nodes into { menu nodes, folded button permissions }
     const split = (rawItems: any[] | undefined) => {
         const menus: any[] = []
-        // Collected as `any` internally (values come from the `any` cb result); public meta.permission is PermissionButton
+        // Collected as `any` internally (values come from the `any` cb result); public meta._permission is PermissionButton
         const permission: Record<string, any> = {}
         for (const raw of rawItems ?? []) {
             const mapped = cb(raw as T)
@@ -39,7 +43,9 @@ export function normalizeMenus<T = any>(
             }
             if (isButton(mapped)) {
                 if (mapped.permission != null) {
-                    permission[mapped.permission] = mapped
+                    // Strip the reserved `_btn` marker before storing the button node
+                    const { _btn, ...button } = mapped
+                    permission[mapped.permission] = button
                 }
             } else {
                 menus.push(mapped)
@@ -53,7 +59,8 @@ export function normalizeMenus<T = any>(
         const node: PermissionMenu = { children: [], meta: {} }
 
         for (const [key, value] of Object.entries(mapped)) {
-            if (key === 'children') {
+            // Skip `children` (handled above) and the reserved `_btn` marker (must not leak into meta)
+            if (key === 'children' || key === '_btn') {
                 continue
             }
             if (key === 'meta') {
@@ -70,7 +77,7 @@ export function normalizeMenus<T = any>(
         }
 
         if (Object.keys(permission).length) {
-            node.meta.permission = permission
+            node.meta._permission = permission
         }
         // Flag external links so the sidebar can render them as <a> (they are not registered as routes)
         if (isExternalPath(node.path)) {
