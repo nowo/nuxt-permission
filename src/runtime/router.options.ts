@@ -9,8 +9,8 @@ import { treeToRoutes } from './utils/treeToRoutes'
 // its dynamic routes here under both SSR and SPA.
 export default <RouterConfig>{
     routes: async (scanned) => {
-        const { setPermissionList, setMenusList } = usePermissionState()
-        const tree = await source({ setPermissionList, setMenusList })
+        const { setPermissionList, setMenuList } = usePermissionState()
+        const tree = await source({ setPermissionList, setMenuList })
         const dynamic = treeToRoutes(tree ?? [], routeManifest)
         return dynamic.length ? [...scanned, ...dynamic] : scanned
     },

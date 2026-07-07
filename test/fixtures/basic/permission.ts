@@ -1,10 +1,10 @@
 // SSR fixture: token via cookie (readable on the server). Register dynamic routes only when the `auth` cookie is present.
-export default definePermissionSource(({ setPermissionList, setMenusList }) => {
+export default definePermissionSource(({ setPermissionList, setMenuList }) => {
     const authed = useCookie('auth').value
     if (!authed) return []
 
     // cb sets the reserved `_btn` marker so type:'button' nodes fold into the parent's meta._permission
-    const tree = normalizeMenus([
+    const tree = normalizePermissionMenus([
         { id: 1, name: 'secret', path: '/admin/secret', type: 'menu', children: [] },
         // group: /section has its own page (section/index.vue) and a child /section/a
         { id: 2, name: 'section', path: '/section', type: 'menu', children: [
@@ -35,6 +35,6 @@ export default definePermissionSource(({ setPermissionList, setMenusList }) => {
         ] },
     ], v => ({ ...v, _btn: `${v.type}` === 'button' }))
     setPermissionList(['secret-view'])
-    setMenusList(tree)
+    setMenuList(tree)
     return tree
 })

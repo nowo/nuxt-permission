@@ -1,6 +1,6 @@
 // Data source: SPA first, token stored in localStorage. Called by the library on first load/refresh,
 // and by usePermissionState().load() after login.
-export default definePermissionSource(async ({ setPermissionList, setMenusList }) => {
+export default definePermissionSource(async ({ setPermissionList, setMenuList }) => {
     const { token } = useToken()
     if (!token.value) return []
 
@@ -11,11 +11,11 @@ export default definePermissionSource(async ({ setPermissionList, setMenusList }
     setPermissionList(permissions)
 
     // Backend uses type 1=menu / 2=button; mark buttons with the reserved _btn flag
-    const tree = normalizeMenus(menus, (v: any) => {
+    const tree = normalizePermissionMenus(menus, (v: any) => {
         if (v.isHideMenu) return false
         return { ...v, _btn: `${v.type}` === '2' }
     })
 
-    setMenusList(tree)
+    setMenuList(tree)
     return tree
 })

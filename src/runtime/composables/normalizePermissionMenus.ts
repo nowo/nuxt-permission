@@ -25,7 +25,7 @@ const isButton = (item: any) => item?._btn === true
  *   (possibly reshaped) node, or a falsy value to drop that node and its whole subtree. Omit it
  *   when the backend data is already in shape and there are no button permissions to fold.
  */
-export function normalizeMenus<T = any>(
+export function normalizePermissionMenus<T = any>(
     list: T[],
     cb: (item: T) => any | undefined | null | false = item => item,
 ): PermissionMenu[] {

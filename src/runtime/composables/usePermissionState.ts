@@ -33,7 +33,7 @@ export function usePermissionState() {
         // Assert here so extending PermissionMap doesn't force callers to cast their fetched list.
         permissions.value = (list ?? []) as PermissionKey[]
     }
-    const setMenusList = (tree: PermissionMenu[]) => {
+    const setMenuList = (tree: PermissionMenu[]) => {
         menus.value = tree ?? []
     }
 
@@ -42,7 +42,7 @@ export function usePermissionState() {
      * Client-only — see the module-scoped `routeRemovers` note above; do not call during SSR.
      */
     const load = async () => {
-        const tree = await source({ setPermissionList, setMenusList })
+        const tree = await source({ setPermissionList, setMenuList })
         const router = useRouter()
         // Drop routes from a previous load() first, so a re-login does not register duplicates
         removeDynamicRoutes()
@@ -71,5 +71,5 @@ export function usePermissionState() {
         routesVersion.value++
     }
 
-    return { permissions, menus, routesVersion, hasPermission, setPermissionList, setMenusList, load, clear }
+    return { permissions, menus, routesVersion, hasPermission, setPermissionList, setMenuList, load, clear }
 }

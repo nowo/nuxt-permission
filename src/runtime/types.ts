@@ -28,7 +28,7 @@ export interface PermissionButton {
 }
 
 /**
- * A menu node produced by normalizeMenus. Route-level fields are reused directly from
+ * A menu node produced by normalizePermissionMenus. Route-level fields are reused directly from
  * vue-router's `_RouteRecordBase` (path/name/redirect/alias/props/sensitive… all made optional);
  * only `children` (recursive of this type) and `meta` (required, vue-router's `RouteMeta`) are
  * overridden. Declare-merge this interface to add extra custom route-level fields.
@@ -41,7 +41,7 @@ export interface PermissionMenu extends Partial<Omit<_RouteRecordBase, 'children
 /** Source context: the state writers injected by the library */
 export interface PermissionSourceContext {
     setPermissionList: (list: string[]) => void
-    setMenusList: (tree: PermissionMenu[]) => void
+    setMenuList: (tree: PermissionMenu[]) => void
 }
 
 /** Data source: read the auth state, fetch permissions/menus, write state, return the menu tree for the library to register */
