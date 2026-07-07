@@ -93,7 +93,7 @@ Why nuxt-permission
   Batteries included
 
   #description
-  `usePermissionState`, `hasPermission`, and the `normalizeMenus` helper.
+  `usePermissionState`, `hasPermission`, and the `normalizePermissionMenus` helper.
   :::
 
   :::u-page-feature

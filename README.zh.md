@@ -15,7 +15,7 @@
 - 🗂 &nbsp;无需 views 目录：页照常写在 `pages/`，白名单外自动转动态
 - ⚡️ &nbsp;SSR 安全：`router.options` 注入，首屏 `push` 之前完成注册
 - 🌲 &nbsp;代码分割正常：构建期生成 bundler 可见的 `import()` 清单
-- 🧩 &nbsp;权限一条龙：`usePermissionState` / `hasPermission` / `normalizeMenus`
+- 🧩 &nbsp;权限一条龙：`usePermissionState` / `hasPermission` / `normalizePermissionMenus`
 - 🅣 &nbsp;类型可扩展：meta 复用 `RouteMeta`，权限 key 用可合并的 `PermissionMap`
 
 ## 安装
@@ -58,7 +58,7 @@ export default defineNuxtConfig({
 
 ```ts
 // app/permission.ts（SPA：token 存 localStorage；SSR 改用 useCookie）
-export default definePermissionSource(async ({ setPermissionList, setMenusList }) => {
+export default definePermissionSource(async ({ setPermissionList, setMenuList }) => {
     const token = /* 你自己的登录态 */ useCookie('token').value
     if (!token) return []
 
@@ -68,8 +68,8 @@ export default definePermissionSource(async ({ setPermissionList, setMenusList }
 
     setPermissionList(permissions)
     // 用保留标记 `_btn` 标注按钮，使其折叠进父级 meta._permission
-    const tree = normalizeMenus(menus, v => ({ ...v, _btn: `${v.type}` === '2' }))
-    setMenusList(tree)
+    const tree = normalizePermissionMenus(menus, v => ({ ...v, _btn: `${v.type}` === '2' }))
+    setMenuList(tree)
     return tree
 })
 ```
@@ -100,7 +100,7 @@ async function onLogin() {
 
 > ⚠️ `hasPermission` 只是**体验层，不是安全边界**——真正鉴权在后端。
 
-### 4. `normalizeMenus` 菜单转换
+### 4. `normalizePermissionMenus` 菜单转换
 
 把后端原始菜单树转成路由形状：在 `cb` 里标注 `_btn: true` 的节点折叠进父级 `meta._permission`（key = permission 字段，value = 整个按钮节点，`_btn` 标记会被剥离）；有 menu 子节点的视为分组，`redirect` 到第一个子菜单；`cb` 返回 falsy 排除该节点及子树；后端 `meta` 摊平进 meta。
 

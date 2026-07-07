@@ -15,7 +15,7 @@ Backend menu / permission driven dynamic routes and permissions for Nuxt: non-wh
 - 🗂 &nbsp;No views directory: pages stay in `pages/`; non-whitelisted ones become dynamic automatically
 - ⚡️ &nbsp;SSR-safe: injected via `router.options`, registered before the first `push`
 - 🌲 &nbsp;Code-splitting works: a bundler-visible `import()` manifest is generated at build time
-- 🧩 &nbsp;Batteries included: `usePermissionState` / `hasPermission` / `normalizeMenus`
+- 🧩 &nbsp;Batteries included: `usePermissionState` / `hasPermission` / `normalizePermissionMenus`
 - 🅣 &nbsp;Extensible types: meta reuses `RouteMeta`, permission keys use the mergeable `PermissionMap`
 
 ## Install
@@ -58,7 +58,7 @@ Read the auth state, fetch permissions/menus, write state, and return the menu t
 
 ```ts
 // app/permission.ts (SPA: token in localStorage; SSR: use useCookie)
-export default definePermissionSource(async ({ setPermissionList, setMenusList }) => {
+export default definePermissionSource(async ({ setPermissionList, setMenuList }) => {
     const token = /* your own auth state */ useCookie('token').value
     if (!token) return []
 
@@ -68,8 +68,8 @@ export default definePermissionSource(async ({ setPermissionList, setMenusList }
 
     setPermissionList(permissions)
     // Mark buttons with the reserved `_btn` flag so they fold into the parent's meta._permission
-    const tree = normalizeMenus(menus, v => ({ ...v, _btn: `${v.type}` === '2' }))
-    setMenusList(tree)
+    const tree = normalizePermissionMenus(menus, v => ({ ...v, _btn: `${v.type}` === '2' }))
+    setMenuList(tree)
     return tree
 })
 ```
@@ -100,7 +100,7 @@ async function onLogin() {
 
 > ⚠️ `hasPermission` is only a **UX layer, not a security boundary** — real authorization lives on the backend.
 
-### 4. `normalizeMenus` menu transform
+### 4. `normalizePermissionMenus` menu transform
 
 Turns the raw backend menu tree into route shape: a node marked `_btn: true` in `cb` is folded into the parent's `meta._permission` (key = the `permission` field, value = the whole button node with the `_btn` marker stripped); a node with menu children is treated as a group and `redirect`s to its first child; `cb` returning a falsy value drops the node and its subtree; a backend `meta` object is flattened into meta.
 
@@ -132,7 +132,7 @@ declare module 'nuxt-permission' {
     interface PermissionMap {
         keys: 'menu-add' | 'menu-edit' | 'menu-view' // hasPermission gets key completion
     }
-    interface PermissionButton { // fields of the button node inside meta.permission
+    interface PermissionButton { // fields of the button node inside meta._permission
         id: number
         name: string
         permission: string

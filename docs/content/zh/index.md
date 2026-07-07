@@ -92,7 +92,7 @@ seo:
   开箱即用
 
   #description
-  `usePermissionState`、`hasPermission` 与 `normalizeMenus` 助手。
+  `usePermissionState`、`hasPermission` 与 `normalizePermissionMenus` 助手。
   :::
 
   :::u-page-feature
