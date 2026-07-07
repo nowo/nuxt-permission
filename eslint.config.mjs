@@ -4,7 +4,9 @@ import defineConfig from '@wzo/eslint-config'
 // Do not stack @nuxt/eslint-config's createConfigForNuxt — both bundle the import/unicorn/jsdoc plugins and conflict.
 export default defineConfig({
     vue: true,
-    ignores: ['log'],
+    // docs/content is MDC (Nuxt Content) — its `#slot` / `::component` syntax trips markdown rules
+    // like no-missing-atx-heading-space (a false positive that mangles slots). Not code to lint.
+    ignores: ['log', 'docs/content'],
 }, {
     // Nuxt file-based route pages may use single-word component names (index / secret / dashboard, etc.)
     files: ['playground/**', 'test/**'],
