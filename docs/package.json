@@ -1,0 +1,15 @@
+{
+    "name": "nuxt-permission-docs",
+    "type": "module",
+    "private": true,
+    "scripts": {
+        "dev": "nuxt dev",
+        "build": "nuxt build",
+        "generate": "nuxt generate"
+    },
+    "dependencies": {
+        "better-sqlite3": "^12.11.1",
+        "docus": "latest",
+        "nuxt": "^4.4.8"
+    }
+}

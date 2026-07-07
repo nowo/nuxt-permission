@@ -1,6 +1,11 @@
 shellEmulator: true
 
 trustPolicy: no-downgrade
-
 packages:
   - playground
+  - docs
+onlyBuiltDependencies:
+  - better-sqlite3
+  - esbuild
+  - sharp
+  - vue-demi
