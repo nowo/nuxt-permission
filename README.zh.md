@@ -4,6 +4,7 @@
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
+[![在线体验][stackblitz-src]][stackblitz-href]
 
 [English](./README.md) | **中文**
 
@@ -173,3 +174,6 @@ declare module 'nuxt-permission' {
 
 [nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt
 [nuxt-href]: https://nuxt.com
+
+[stackblitz-src]: https://img.shields.io/badge/%E5%9C%A8%E7%BA%BF%E4%BD%93%E9%AA%8C-StackBlitz-020420?style=flat&colorA=020420&colorB=00DC82&logo=stackblitz
+[stackblitz-href]: https://stackblitz.com/github/nowo/nuxt-permission?file=playground%2Fapp.vue

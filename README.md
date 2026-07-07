@@ -4,6 +4,7 @@
 [![npm downloads][npm-downloads-src]][npm-downloads-href]
 [![License][license-src]][license-href]
 [![Nuxt][nuxt-src]][nuxt-href]
+[![Play online][stackblitz-src]][stackblitz-href]
 
 **English** | [中文](./README.zh.md)
 
@@ -173,3 +174,6 @@ The label layer is fully compatible (the library never touches `name`/`meta`; re
 
 [nuxt-src]: https://img.shields.io/badge/Nuxt-020420?logo=nuxt
 [nuxt-href]: https://nuxt.com
+
+[stackblitz-src]: https://img.shields.io/badge/Play_online-StackBlitz-020420?style=flat&colorA=020420&colorB=00DC82&logo=stackblitz
+[stackblitz-href]: https://stackblitz.com/github/nowo/nuxt-permission?file=playground%2Fapp.vue
