@@ -4,6 +4,17 @@ export default defineNuxtConfig({
     site: {
         name: 'nuxt-permission',
     },
+    // Docus bundles SEO site modules (og-image / robots). Under a subpath baseURL they crash the
+    // static prerender (h3 appendResponseHeader on an undefined response — an h3 v1/v2 version skew).
+    // Not essential for these docs, so disable them for a working GitHub Pages build.
+    ogImage: { enabled: false },
+    robots: { enabled: false },
+    // A /sitemap.xml route is still registered (via site-config) and 500s under baseURL; skip it.
+    nitro: {
+        prerender: {
+            ignore: ['/sitemap.xml'],
+        },
+    },
     i18n: {
         defaultLocale: 'en',
         // English-only for now. The full Chinese translation lives in content/zh/ and is ready to
@@ -17,8 +28,7 @@ export default defineNuxtConfig({
             name: 'English',
         }],
     },
-    // Deploying under a subpath (nowo.github.io/nuxt-permission): uncomment when wiring the GitHub
-    // Pages workflow, then run `nuxt generate`.
-    // app: { baseURL: '/nuxt-permission/' },
-    // nitro: { preset: 'github-pages' },
+    // GitHub Pages deploy (subpath https://nowo.github.io/nuxt-permission/) is handled by
+    // .github/workflows/deploy-docs.yml via env vars — NUXT_APP_BASE_URL=/nuxt-permission/ and
+    // NITRO_PRESET=github_pages — so local `pnpm dev:docs` stays at the root path.
 })
