@@ -6,7 +6,7 @@ on:
       - main
     paths:
       - 'docs/**'
-      - '.github/workflows/deploy-docs.yml'
+      - .github/workflows/deploy-docs.yml
   workflow_dispatch:
 
 # Allow the deploy job to publish to GitHub Pages via OIDC
