@@ -42,7 +42,7 @@
         "dev": "npm run dev:prepare && nuxt dev playground",
         "dev:docs": "pnpm --filter nuxt-permission-docs dev",
         "dev:build": "nuxt build playground",
-        "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt prepare playground",
+        "dev:prepare": "nuxt-module-build build --stub && nuxt-module-build prepare && nuxt prepare playground && nuxt prepare test/fixtures/basic",
         "lint": "eslint .",
         "test": "vitest run",
         "test:watch": "vitest watch",
