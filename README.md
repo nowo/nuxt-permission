@@ -106,8 +106,6 @@ async function onLogin() {
 Turns the raw backend menu tree into route shape: a node marked `_btn: true` in `cb` is folded into the parent's `meta._permission` (key = the `permission` field, value = the whole button node with the `_btn` marker stripped); a node with menu children is treated as a group and `redirect`s to its first child; `cb` returning a falsy value drops the node and its subtree; a backend `meta` object is flattened into meta.
 
 > **Reserved keys** (all `_`-prefixed, isolated from your backend data): input marker `_btn` (you set it in `cb` to mark buttons); output `meta._permission` (folded button permissions) and `meta._external` (external-link flag).
->
-> **Migrating from 1.x** (breaking): buttons are now marked with `_btn` in `cb` instead of being inferred from `type === 'button'`, and folded permissions moved from `meta.permission` to `meta._permission`. Update your `cb` to set `_btn`, and read `route.meta._permission` instead of `route.meta.permission`.
 
 **Menu path notes**
 

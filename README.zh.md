@@ -106,8 +106,6 @@ async function onLogin() {
 把后端原始菜单树转成路由形状：在 `cb` 里标注 `_btn: true` 的节点折叠进父级 `meta._permission`（key = permission 字段，value = 整个按钮节点，`_btn` 标记会被剥离）；有 menu 子节点的视为分组，`redirect` 到第一个子菜单；`cb` 返回 falsy 排除该节点及子树；后端 `meta` 摊平进 meta。
 
 > **保留字段**（统一 `_` 前缀，与后端数据隔离）：输入标记 `_btn`（你在 `cb` 里设置以标注按钮）；输出 `meta._permission`（折叠的按钮权限）、`meta._external`（外链标记）。
->
-> **从 1.x 迁移**（破坏性）：按钮改为在 `cb` 里用 `_btn` 标注，不再从 `type === 'button'` 推断；折叠权限从 `meta.permission` 移到 `meta._permission`。请把 `cb` 改为设置 `_btn`，并把 `route.meta.permission` 的读取改成 `route.meta._permission`。
 
 **菜单 path 说明**
 
