@@ -81,4 +81,18 @@ describe('nuxt-permission', async () => {
         expect(html).toContain('add-fields:id,name,permission,type') // no _btn
         expect(html).not.toContain('_btn')
     })
+
+    it('registers an optional-param page ([[id]] → :id?), matching both /opt and /opt/5', async () => {
+        const bare = await $fetch('/opt', { headers: { cookie: 'auth=1' } })
+        const withId = await $fetch('/opt/5', { headers: { cookie: 'auth=1' } })
+        expect(bare).toContain('opt-page:none')
+        expect(withId).toContain('opt-page:5')
+    })
+
+    it('a mailto: link is treated as external — the all-external group still registers no route (404)', async () => {
+        // /links has only external children (http + mailto); if mailto were not recognized as
+        // external it would become a registerable child and the group would redirect instead of 404
+        const res = await fetch('/links', { headers: { cookie: 'auth=1' } })
+        expect(res.status).toBe(404)
+    })
 })

@@ -25,6 +25,8 @@ export default definePermissionSource(({ setPermissionList, setMenuList }) => {
         { id: 8, name: 'links', path: '/links', type: 'menu', children: [
             { id: 9, name: 'gh2', path: 'https://github.com/', type: 'menu', children: [] },
             { id: 10, name: 'nuxt', path: 'https://nuxt.com/', type: 'menu', children: [] },
+            // mailto: has no `//` — only registers no route if isExternalPath recognizes the scheme
+            { id: 12, name: 'mail', path: 'mailto:a@b.com', type: 'menu', children: [] },
         ] },
         // same page as menu id 1, reached from a second entry — must register once (no duplicate route)
         { id: 11, name: 'secret-alt', path: '/admin/secret', type: 'menu', children: [] },
@@ -33,6 +35,8 @@ export default definePermissionSource(({ setPermissionList, setMenuList }) => {
             { id: 21, name: 'Add', permission: 'menu-add', type: 'button' },
             { id: 22, name: 'Edit', permission: 'menu-edit', type: 'button' },
         ] },
+        // optional param page: backend `[[id]]` → :id?, matches both /opt and /opt/:id
+        { id: 40, name: 'opt', path: '/opt/[[id]]', type: 'menu', children: [] },
     ], v => ({ ...v, _btn: `${v.type}` === 'button' }))
     setPermissionList(['secret-view'])
     setMenuList(tree)
