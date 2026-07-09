@@ -21,11 +21,19 @@ Backend menu / permission driven dynamic routes and permissions for Nuxt: non-wh
 
 ## Install
 
+**Nuxt CLI (recommended)** — installs the package and registers it in `nuxt.config.ts` in one step:
+
 ```bash
 npx nuxt module add nuxt-permission
-# or
+```
+
+**Or manually** — install with your package manager (`pnpm` / `npm` / `yarn` / `bun`):
+
+```bash
 pnpm add -D nuxt-permission
 ```
+
+then add it to `modules` in `nuxt.config.ts` (see below).
 
 ## Configuration
 

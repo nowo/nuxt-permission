@@ -21,11 +21,19 @@
 
 ## 安装
 
+**Nuxt CLI(推荐)** —— 一步安装并自动注册进 `nuxt.config.ts`:
+
 ```bash
 npx nuxt module add nuxt-permission
-# 或
+```
+
+**或手动** —— 用你的包管理器(`pnpm` / `npm` / `yarn` / `bun`)安装:
+
+```bash
 pnpm add -D nuxt-permission
 ```
+
+然后把它加进 `nuxt.config.ts` 的 `modules`(见下)。
 
 ## 配置
 
