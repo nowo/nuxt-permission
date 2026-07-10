@@ -109,10 +109,15 @@ export function createPermission(router: Router, options: CreatePermissionOption
     router.beforeEach(async (to) => {
         if (ready) return true
         ready = true
+        const before = router.getRoutes().length
         await store.load()
-        // `to.matched` was computed against the pre-load table; if the target wasn't registered yet,
-        // re-resolve it now that the dynamic routes exist. Static routes already matched — leave them.
-        if (to.matched.length === 0) return { ...to, replace: true }
+        // `to.matched` was computed against the pre-load table; if the target wasn't registered yet
+        // but load() just added routes, re-resolve so the freshly-registered one matches. Skip the
+        // re-resolve when nothing was added (e.g. logged-out source returns []) — re-resolving a path
+        // that stays unregistered is futile and makes vue-router log an extra "No match" warning.
+        if (to.matched.length === 0 && router.getRoutes().length > before) {
+            return { ...to, replace: true }
+        }
         return true
     })
 
