@@ -111,4 +111,87 @@ describe('createPermission (vue)', () => {
         const { usePermissionState } = await freshVue()
         expect(() => usePermissionState()).toThrow(/createPermission/)
     })
+
+    it('static: strips non-whitelisted routes off the router and re-registers on login', async () => {
+        const { createPermission, definePermissionSource } = await freshVue()
+        const router = createRouter({
+            history: createMemoryHistory(),
+            routes: [
+                { path: '/', name: 'home', component: Stub },
+                { path: '/login', name: 'login', component: Stub },
+                { path: '/dashboard', name: 'dashboard', component: Stub },
+                { path: '/menu', name: 'menu', component: Stub },
+            ],
+        })
+
+        createPermission(router, {
+            static: ['/', '/login'],
+            source: definePermissionSource(({ setPermissionList, setMenuList }) => {
+                setPermissionList(['menu-add'])
+                const tree = [{ path: '/dashboard', name: 'dashboard', children: [], meta: {} }]
+                setMenuList(tree)
+                return tree
+            }),
+        })
+
+        // protected routes are pulled off immediately; public ones stay
+        const paths = router.getRoutes().map(r => r.path)
+        expect(paths).toContain('/')
+        expect(paths).toContain('/login')
+        expect(paths).not.toContain('/dashboard')
+        expect(paths).not.toContain('/menu')
+
+        // the granted one comes back after the source runs; the ungranted one does not
+        await router.push('/dashboard')
+        expect(router.currentRoute.value.path).toBe('/dashboard')
+        expect(router.currentRoute.value.matched.length).toBeGreaterThan(0)
+        expect(router.hasRoute('menu')).toBe(false)
+    })
+
+    it('enabled: false keeps all routes static, never runs the source, stays callable', async () => {
+        const { createPermission, definePermissionSource, hasPermission, usePermissionState } = await freshVue()
+        const router = createRouter({
+            history: createMemoryHistory(),
+            routes: [
+                { path: '/', name: 'home', component: Stub },
+                { path: '/dashboard', name: 'dashboard', component: Stub },
+            ],
+        })
+        const source = vi.fn(() => [])
+
+        createPermission(router, {
+            enabled: false,
+            static: ['/'],
+            source: definePermissionSource(source),
+        })
+
+        // nothing stripped — the protected route stays reachable
+        await router.push('/dashboard')
+        expect(router.currentRoute.value.matched.length).toBeGreaterThan(0)
+        // the user source is never invoked; composables stay safe
+        expect(source).not.toHaveBeenCalled()
+        expect(hasPermission('anything')).toBe(false)
+        expect(() => usePermissionState()).not.toThrow()
+    })
+
+    it('static: warns and keeps an unnamed non-whitelisted route public', async () => {
+        const { createPermission, definePermissionSource } = await freshVue()
+        const warn = vi.spyOn(console, 'warn').mockImplementation(() => {})
+        const router = createRouter({
+            history: createMemoryHistory(),
+            routes: [
+                { path: '/', name: 'home', component: Stub },
+                { path: '/secret', component: Stub }, // no name → cannot be stripped
+            ],
+        })
+
+        createPermission(router, {
+            static: ['/'],
+            source: definePermissionSource(() => []),
+        })
+
+        expect(router.getRoutes().map(r => r.path)).toContain('/secret')
+        expect(warn).toHaveBeenCalledWith(expect.stringContaining('/secret'))
+        warn.mockRestore()
+    })
 })
